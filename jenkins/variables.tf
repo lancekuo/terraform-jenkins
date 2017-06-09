@@ -10,7 +10,6 @@ variable "ami" {}
 variable "project" {}
 variable "domain" {}
 variable "availability_zones" {}
-variable "registry_bucket" {}
 
 variable "bastion_public_key_path" {}
 variable "bastion_private_key_path" {}

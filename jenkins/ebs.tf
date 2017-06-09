@@ -11,7 +11,7 @@ resource "aws_ebs_volume" "storage-jenkins" {
     availability_zone = "${element(split(",", var.availability_zones), (length(aws_instance.node.*.id)-1))}"
     size              = 50
     lifecycle         = {
-#        ignore_changes  = "*"
+        ignore_changes  = "*"
         prevent_destroy = true
     }
     tags  {
@@ -36,7 +36,7 @@ resource "null_resource" "ebs_trigger" {
             "if grep -qs '/opt/jenkins' /proc/mounts; then echo \"/opt/jenkins has mounted.\"; else sudo mount `sudo file -s /dev/xvdg1|awk -F\\  '{print $8}'` /opt/jenkins; fi",
         ]
         connection {
-            bastion_host        = "${aws_eip.swarm-bastion.public_ip}"
+            bastion_host        = "${aws_eip.bastion.public_ip}"
             bastion_user        = "ubuntu"
             bastion_private_key = "${file("${path.root}${var.bastion_private_key_path}")}"
 

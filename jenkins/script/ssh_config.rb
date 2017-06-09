@@ -41,7 +41,7 @@ class SshConfig
   end
 end
 
-system("aws --region ca-central-1 s3 cp s3://terraform.internal/env:/stg/terraform.tfstate "+ File.dirname(__FILE__))
+system("aws --region us-east-2 s3 cp s3://tf.ci.internal/env:/continuous-integration/terraform.tfstate "+ File.dirname(__FILE__))
 
 file = File.read(File.dirname(__FILE__)+'/terraform.tfstate')
 data_hash = JSON.parse(file)

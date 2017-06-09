@@ -70,7 +70,7 @@ resource "aws_s3_bucket" "registry" {
     bucket = "registry.hub.internal"
     acl    = "private"
     lifecycle         = {
-#        ignore_changes  = "*"
+        ignore_changes  = "*"
         prevent_destroy = true
     }
 
@@ -88,12 +88,12 @@ resource "null_resource" "registry_trigger" {
 
     provisioner "remote-exec" {
         inline = [
-            "docker rm -f registry_stg >/dev/null;docker run -d -e REGISTRY_STORAGE=s3 -e REGISTRY_STORAGE_S3_ACCESSKEY=${aws_iam_access_key.register_pusher.id} -e REGISTRY_STORAGE_S3_SECRETKEY=${aws_iam_access_key.register_pusher.secret} -e REGISTRY_STORAGE_S3_REGION=${var.region} -e REGISTRY_STORAGE_S3_REGIONENDPOINT=http://s3.${var.region}.amazonaws.com -e REGISTRY_STORAGE_S3_BUCKET=${aws_s3_bucket.registry.id} -e REGISTRY_STORAGE_S3_V4AUTH=true -e REGISTRY_STORAGE_S3_ROOTDIRECTORY=/ -p 80:5000 --name registry --restart always registry:2",
+            "docker rm -f registry >/dev/null;docker run -d -e REGISTRY_STORAGE=s3 -e REGISTRY_STORAGE_S3_ACCESSKEY=${aws_iam_access_key.register_pusher.id} -e REGISTRY_STORAGE_S3_SECRETKEY=${aws_iam_access_key.register_pusher.secret} -e REGISTRY_STORAGE_S3_REGION=${var.region} -e REGISTRY_STORAGE_S3_REGIONENDPOINT=http://s3.${var.region}.amazonaws.com -e REGISTRY_STORAGE_S3_BUCKET=${aws_s3_bucket.registry.id} -e REGISTRY_STORAGE_S3_V4AUTH=true -e REGISTRY_STORAGE_S3_ROOTDIRECTORY=/ -p 80:5000 --name registry --restart always registry:2",
         ]
         connection {
             type        = "ssh"
             user        = "ubuntu"
-            host        = "${var.bastion_public_ip}"
+            host        = "${aws_eip.bastion.public_ip}"
             private_key = "${file("${path.root}${var.bastion_private_key_path}")}"
         }
     }

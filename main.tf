@@ -13,7 +13,6 @@ module "jenkins" {
 
     ami                      = "${var.docker-ami}"
     domain                   = "lancekuo.com"
-    registry_bucket          = "arn:aws:s3:::registry.internal"
     vpc_default_id           = "${module.vpc.vpc_default_id}"
 
     bastion_public_key_path  = "${var.bastion-key["public_key_path"]}"
@@ -33,4 +32,8 @@ module "jenkins" {
     subnet_on_public         = "${module.vpc.subnet_on_public}"
 
     jenkins_node_count       = "1"
+}
+
+output "registry" {
+    value = "${module.jenkins.registry}"
 }
