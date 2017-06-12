@@ -1,12 +1,12 @@
 module "vpc" {
-    source  = "./vpc/"
+    source  = "github.com/lancekuo/tf-vpc"
 
     project = "${var.project}"
     region  = "${var.region}"
 }
 
 module "jenkins" {
-    source                   = "./jenkins"
+    source                   = "github.com/lancekuo/tf-jenkins"
 
     project                  = "${var.project}"
     region                   = "${var.region}"
