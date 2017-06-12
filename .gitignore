@@ -4,5 +4,5 @@ terraform.tfstate.d/
 *.swp
 keys/*
 !keys/.placeholder
-*/script/terraform.tfstate
-*/script/ssh_config_*
+*/scripts/terraform.tfstate
+*/scripts/ssh_config_*
