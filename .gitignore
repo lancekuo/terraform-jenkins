@@ -1,6 +1,5 @@
 terraform.tfstate.d/
-.terraform/*
-!.terraform/environment
+.terraform/modules/
 *.swp
 keys/*
 !keys/.placeholder
