@@ -34,6 +34,17 @@ module "jenkins" {
     jenkins_node_count       = "1"
 }
 
+module "script" {
+    source                   = "github.com/lancekuo/tf-tools"
+
+    project                  = "${var.project}"
+    region                   = "${var.region}"
+    bucket_name              = "${var.s3-bucket_name}"
+    filename                 = "${var.s3-filename}"
+    s3-region                = "${var.s3-region}"
+    node_list                = "${module.jenkins.node_private_ip}"
+}
+
 output "registry" {
     value = "${module.jenkins.registry}"
 }

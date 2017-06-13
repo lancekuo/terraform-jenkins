@@ -5,6 +5,16 @@ terraform {
         region = "us-east-2"
     }
 }
+variable "s3-bucket_name" {
+    default = "tf.ci.internal"
+}
+variable "s3-filename" {
+    default = "terraform.tfstate"
+}
+variable "s3-region" {
+    default = "us-east-2"
+}
+
 variable "region" {
     default = "us-east-2"
 }
