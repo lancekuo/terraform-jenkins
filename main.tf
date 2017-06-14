@@ -34,6 +34,19 @@ module "jenkins" {
     jenkins_node_count       = "1"
 }
 
+module "registry" {
+    source                   = "github.com/lancekuo/tf-registry"
+
+    project                  = "${var.project}"
+    region                   = "${var.region}"
+
+    vpc_default_id           = "${module.vpc.vpc_default_id}"
+    bastion_public_ip        = "${module.jenkins.bastion_public_ip}"
+    bastion_private_ip       = "${module.jenkins.bastion_private_ip}"
+    bastion_private_key_path = "${var.bastion-key["private_key_path"]}"
+
+}
+
 module "script" {
     source                   = "github.com/lancekuo/tf-tools"
 
@@ -45,6 +58,3 @@ module "script" {
     node_list                = "${module.jenkins.node_private_ip}"
 }
 
-output "registry" {
-    value = "${module.jenkins.registry}"
-}
