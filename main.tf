@@ -41,6 +41,7 @@ module "registry" {
     region                   = "${var.region}"
 
     vpc_default_id           = "${module.vpc.vpc_default_id}"
+    security_group_node_id   = "${module.jenkins.security_group_node_id}"
     bastion_public_ip        = "${module.jenkins.bastion_public_ip}"
     bastion_private_ip       = "${module.jenkins.bastion_private_ip}"
     bastion_private_key_path = "${var.bastion-key["private_key_path"]}"
