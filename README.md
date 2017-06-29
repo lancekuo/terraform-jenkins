@@ -1,11 +1,26 @@
 # Terraform with Jenkins
-##0. Install awscli with profile setup
+## What will you get?
+| AWS    | Purpose                          |
+|--------|----------------------------------|
+| VPC    | Continuous-integration VPC       |
+| Subnets| Private, Public and Bastion      |
+| GW     | Internet gateway, NAT gateway    |
+| EC2    | Bastion and Node                 |
+| ELB    | For Jenkins:8080 (Access point)  |
+| EBS    | Persist storage attached on Node |
+| S3     | Private registry run on Bastion  |
+| Route53| ** TODO**                        |
+| *      | Auto generated ssh config file   |
+
+Terraform env continuous-integration
+Project ci
+## 0. Install awscli with profile setup
 Install awscli and configure your access key secret token into it.
-##1. Initialize Terraform module
+## 1. Initialize Terraform module
 ```language
 terraform get
 ```
-##2. Initialize Terraform backend
+## 2. Initialize Terraform backend
 Make sure you are able to access the S3 bucket that setup in variable.tf
 ```language
 terraform {
@@ -21,29 +36,29 @@ Then,
 ```language
 terraform init
 ```
-##3. Generate SSH key for bastion and node instance
+## 3. Generate SSH key for bastion and node instance
 ```language
 ssh-keygen -t rsa -b 4096 -f keys/node
 ssh-keygen -t rsa -b 4096 -f keys/bastion
 ```
-##4. Persistent stroage
+## 4. Persistent stroage
 Import predefined resources
 ```language
 terraform import module.registry.aws_s3_bucket.registry registry.hub.internal
 terraform import module.jenkins.aws_ebs_volume.storage-jenkins
 ```
-##5. Apply~~
+## 5. Apply~~
 ```language
 terraform apply
 ```
 
-##6. Get ssh config
+## 6. Get ssh config
 ```language
 ruby keys/ssh_config_ci-continuous-integration.rb
 ssh continuous-integration-ci-bastion-0
 ```
 
-##Additional
+## Additional
 Teardown steps
 ```language
 terraform state rm module.registry.aws_s3_bucket.registry
