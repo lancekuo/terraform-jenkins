@@ -9,7 +9,7 @@
 | ELB    | For Jenkins:8080 (Access point)  |
 | EBS    | Persist storage attached on Node |
 | S3     | Private registry run on Bastion  |
-| Route53| ** TODO**                        |
+| Route53| Point to private registry dns    |
 | *      | Auto generated ssh config file   |
 
 Terraform env continuous-integration
