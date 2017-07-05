@@ -59,3 +59,18 @@ module "script" {
     node_list                = "${module.jenkins.node_private_ip}"
 }
 
+output "Jenkins-DNS" {
+    value = "${module.jenkins.elb_jenkins_dns}"
+}
+output "Registry-pull-access" {
+    value = "${module.registry.access}"
+}
+output "Registry-pull-secret" {
+    value = "${module.registry.secret}"
+}
+output "Registry-Internal-DNS" {
+    value = "${module.registry.registry_internal_dns}"
+}
+output "SSH-Config" {
+    value = "${module.script.ssh_config}"
+}

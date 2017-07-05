@@ -45,7 +45,7 @@ ssh-keygen -t rsa -b 4096 -f keys/bastion
 Import predefined resources
 ```language
 terraform import module.registry.aws_s3_bucket.registry registry.hub.internal
-terraform import module.jenkins.aws_ebs_volume.storage-jenkins
+terraform import module.jenkins.aws_ebs_volume.storage-jenkins vol-01940bea2da8fd949
 ```
 ## 5. Apply~~
 ```language
@@ -63,5 +63,5 @@ Teardown steps
 ```language
 terraform state rm module.registry.aws_s3_bucket.registry
 terraform state rm module.jenkins.aws_ebs_volume.storage-jenkins
-terrafrom destroy
+terraform destroy
 ```
