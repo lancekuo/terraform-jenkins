@@ -1,28 +1,103 @@
-# Terraform with Jenkins
-## What will you get?
-| AWS    | Purpose                          |
-|--------|----------------------------------|
-| VPC    | Continuous-integration VPC       |
-| Subnets| Private, Public and Bastion      |
-| GW     | Internet gateway, NAT gateway    |
-| EC2    | Bastion and Node                 |
-| ELB    | For Jenkins:8080 (Access point)  |
-| EBS    | Persist storage attached on Node |
-| S3     | Private registry run on Bastion  |
-| Route53| Point to private registry dns    |
-| *      | Auto generated ssh config file   |
+This document describes how to build a Jenkins with Docker environment in an AWS VPC using Terraform.
 
-Terraform env continuous-integration
-Project ci
-## 0. Install awscli with profile setup
-Install awscli and configure your access key secret token into it.
-## 1. Initialize Terraform module
-```language
-terraform get
+The repository here has three major components.
+
+* Customzied AMI
+* Docker environment
+* Jenkins
+
 ```
-## 2. Initialize Terraform backend
-Make sure you are able to access the S3 bucket that setup in variable.tf
-```language
+              ┌──────────────────────────────┐                  
+ ┌───┐  ┌───┐ │ Docker VPC                   │                  
+ │ R │  │ E │ │     ┌───────────────────┐    │  ┌──────────────┐
+ │ 5 │─▶│ L │─┼────▶│       Node 0      │────┼─▶│ EBS Jenkins  │
+ │ 3 │  │ B │ │     └───────────────────┘    │  └──────────────┘
+ └───┘  └───┘ │     ┌───────────────────┐    │  ┌──────────────┐
+              │     │      Bastion      │────┼─▶│ S3 Registry  │
+              │     └─────┬─────────────┘    │  └──────────────┘
+ ┌───┐        └───────────┼──────────────────┘                  
+ │ R │            .───────▼───────────.                         
+ │ 5 │──────────▶(  Private Registry   )                        
+ │ 3 │            `───────────────────'                         
+ └───┘                                                          
+```
+## Customzied AMI
+It comes in git-submodule and uses [packer.io](https://www.packer.io/) to build our own base image in AWS. The base path for this submodule is under `.packer-docker`
+
+Take a look at `docker.json` to see detailed configuration for the customized AMI. Briefly it takes ubnunt 16.10, docker ce_17.06, docker-machine, docker-compose and AWS CLI installed.
+
+`docker.options` enables `experimental=true` and `insecure-registry` to `10.0.0.0/8`， `192.0.0.0/8` and `172.0.0.0/8` for testing purpose.
+
+### Prerequisites
+> Install awscli in your local machine and configure your access key secret token.
+
+### Command
+```bash
+git submodule init --update
+cd .packer-docker
+packer build docker.json
+```
+
+###### Note 1: For building your own AMI, you need to update three parameters. `region`, `security_group_ids`, `subnet_id`.
+###### Note 2: Update README.md and commit into repository when you produce a new AMI.
+
+## Docker Environment
+It build up the infrastructure in AWS.
+#### Terraform Module [VPC](https://github.com/lancekuo/tf-vpc)
+This module build up the fundamental of infrastructure including `VPC`, `Subnet`, `Gateway` and `Route table`.
+Also, this module would build up the infrastrucutre for the specific environment and project. For example: `continuous-integration` environment for project `ci`.
+
+You can change/update the environment profile by using Terraform's command.
+```bash
+terraform env -help
+```
+
+You can change `project` name and `region` by update `variable.tf`
+```bash
+variable "project" {
+    default = "ci"
+}
+variable "region" {
+    default = "us-east-2"
+}
+```
+
+#### Terraform Module [Jenkins](https://github.com/lancekuo/tf-jenkins)
+This is the primary Terraform module to build the infrastructure for Jenkins. This module would create resources includes,
+
+| Resource        | Purpose                          |
+|-----------------|----------------------------------|
+| Bastion         | With EIP                         |
+| Node            | With Docker engine ready         |
+| Security Groups | Restrict policy                  |
+| EBS             | Persist storage attached on Node |
+| ELB             | For Jenkins:8080                 |
+
+There are a few parameters that you will need to know.
+0. `jenkins_node_count`, how many `node` will be created in total? Default is 1.
+
+###### Those parameters can be found in [VPC module](https://github.com/lancekuo/tf-vpc).
+
+The algorism will spread EC2 instance to all subnets that created by VPC module to make sure we use every availbility zone in specific region to have best HA.
+
+Check [here](https://github.com/lancekuo/tf-jenkins/blob/master/ebs.tf) to know how to fdisk and mount to EC2 instance in first time.
+
+#### Terraform Module [Registry](https://github.com/lancekuo/tf-registry)
+This module creates private registry and store images in S3 bucket and the container runs on Bastion machine.
+Default Route53_record for private registry is `{ENV}-registry.{PROJECT}.internal`.
+
+| Resource | Purpose                          |
+|----------|----------------------------------|
+| S3       | Private registry run on Bastion  |
+| Route53  | Point to private registry dns    |
+
+#### Terraform Module [Script](https://github.com/lancekuo/tf-tools)
+Most beautiful feature here, it generate your ssh config file from Terraform state file.
+This version comes with Bastion server settings.
+
+### Prerequisites
+> Make sure you are able to access the S3 bucket that setup in `variable.tf`
+```hcl
 terraform {
     backend "s3" {
         bucket = "tf.ci.internal"
@@ -30,38 +105,52 @@ terraform {
         region = "us-east-2"
     }
 }
-
 ```
-Then,
-```language
+
+### Command
+**Initialize Terraform**
+(one time job)
+```bash
+terraform get
 terraform init
 ```
-## 3. Generate SSH key for bastion and node instance
-```language
+**Generate SSH key for bastion and node instance**
+(one time job)
+```bash
 ssh-keygen -t rsa -b 4096 -f keys/node
 ssh-keygen -t rsa -b 4096 -f keys/bastion
 ```
-## 4. Persistent stroage
-Import predefined resources
-```language
+**Import the persistent stroage**
+```bash
 terraform import module.registry.aws_s3_bucket.registry registry.hub.internal
 terraform import module.jenkins.aws_ebs_volume.storage-jenkins vol-01940bea2da8fd949
 ```
-## 5. Apply~~
-```language
+**Apply**
+```bash
 terraform apply
 ```
 
-## 6. Get ssh config
-```language
-ruby keys/ssh_config_ci-continuous-integration.rb
-ssh continuous-integration-ci-bastion-0
+### Additional
+**Update your ssh config**
+```bash
+ruby keys/ssh_config_*.rb
 ```
 
-## Additional
-Teardown steps
-```language
+**Teardown the infrastructure**
+```bash
 terraform state rm module.registry.aws_s3_bucket.registry
 terraform state rm module.jenkins.aws_ebs_volume.storage-jenkins
-terraform destroy
+terraform destroy -force
 ```
+
+## Jenkins
+Those docker-compose file brings you the completed Jenkins.
+
+### Command
+**Spin up**
+```bash
+cd jenkins
+docker-compose up -d
+```
+
+###### tags: amazons web service, aws, terraform, docker, docker swarm
