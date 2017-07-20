@@ -91,6 +91,13 @@ Default Route53_record for private registry is `{ENV}-registry.{PROJECT}.interna
 | S3       | Private registry run on Bastion  |
 | Route53  | Point to private registry dns    |
 
+#### Important Note
+> Add `/docker` folder under root of the bucket for registry, this is the bug of registry.
+```hcl
+Bucket: registry.hub.internal
+        /docker
+```
+
 #### Terraform Module [Script](https://github.com/lancekuo/tf-tools)
 Most beautiful feature here, it generate your ssh config file from Terraform state file.
 This version comes with Bastion server settings.

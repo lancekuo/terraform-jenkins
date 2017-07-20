@@ -46,6 +46,7 @@ module "registry" {
     bastion_private_ip       = "${module.jenkins.bastion_private_ip}"
     bastion_private_key_path = "${var.bastion-key["private_key_path"]}"
 
+    internal_zone_id         = "${module.vpc.internal_zone_id}"
 }
 
 module "script" {
