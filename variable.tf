@@ -1,10 +1,10 @@
-terraform {
-    backend "s3" {
-        bucket = "tf.ci.internal"
-        key    = "terraform.tfstate"
-        region = "us-east-2"
-    }
-}
+#terraform {
+#    backend "s3" {
+#        bucket = "tf.ci.internal"
+#        key    = "terraform.tfstate"
+#        region = "us-east-2"
+#    }
+#}
 variable "s3-bucket_name" {
     default = "tf.ci.internal"
 }
