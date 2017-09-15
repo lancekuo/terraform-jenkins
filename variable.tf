@@ -22,3 +22,5 @@ variable "rsa_key_node"                    {type="map"}
 variable "count_bastion_subnet_on_public"  {}
 variable "count_subnet_per_az"             {}
 variable "count_instance_per_az"           {}
+
+variable "s3_bucketname_registry"          {}

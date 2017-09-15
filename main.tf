@@ -21,7 +21,7 @@ module "jenkins" {
     instance_type_bastion          = "${var.instance_type_bastion}"
     instance_type_node             = "${var.instance_type_node}"
 
-    rsa_key_bastion                = "${var.rsa_key_node}"
+    rsa_key_bastion                = "${var.rsa_key_bastion}"
     rsa_key_node                   = "${var.rsa_key_node}"
 
     subnet_public_bastion_ids      = "${module.vpc.subnet_public_bastion_ids}"
@@ -47,6 +47,7 @@ module "registry" {
     rsa_key_bastion          = "${var.rsa_key_bastion}"
 
     route53_internal_zone_id = "${module.vpc.route53_internal_zone_id}"
+    s3_bucketname_registry   = "${var.s3_bucketname_registry}"
 }
 
 module "script" {

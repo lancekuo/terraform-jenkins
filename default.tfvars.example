@@ -5,13 +5,14 @@ aws_region                      = "us-east-1"
 project                         = "CI"
 
 count_bastion_subnet_on_public  = 1
-count_swarm_manager             = 3
-count_subnet_per_az             = 2
+count_subnet_per_az             = 1
 count_instance_per_az           = 1
 
 aws_ami_docker                  = "ami-fe465d85"
 instance_type_bastion           = "t2.nano"
 instance_type_node              = "t2.small"
+
+s3_bucketname_registry          = "randomly_registry"
 
 rsa_key_bastion = {
     "public_key_path"  = "/keys/bastion.pub"
