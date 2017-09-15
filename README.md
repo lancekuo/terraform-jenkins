@@ -49,7 +49,7 @@ Also, this module would build up the infrastrucutre for the specific environment
 
 You can change/update the environment profile by using Terraform's command.
 ```bash
-terraform env -help
+terraform workspace -help
 ```
 
 You can change `project` name and `region` by update `variable.tf`
@@ -58,7 +58,7 @@ variable "project" {
     default = "ci"
 }
 variable "region" {
-    default = "us-east-2"
+    default = "us-east-1"
 }
 ```
 
@@ -109,7 +109,7 @@ terraform {
     backend "s3" {
         bucket = "tf.ci.internal"
         key    = "terraform.tfstate"
-        region = "us-east-2"
+        region = "us-east-1"
     }
 }
 ```
@@ -124,17 +124,21 @@ terraform init
 **Generate SSH key for bastion and node instance**
 (one time job)
 ```bash
-ssh-keygen -t rsa -b 4096 -f keys/node
-ssh-keygen -t rsa -b 4096 -f keys/bastion
+ssh-keygen -q -t rsa -b 4096 -f keys/node -N ''
+ssh-keygen -q -t rsa -b 4096 -f keys/bastion -N ''
 ```
 **Import the persistent stroage**
 ```bash
 terraform import module.registry.aws_s3_bucket.registry registry.hub.internal
 terraform import module.jenkins.aws_ebs_volume.storage-jenkins vol-01940bea2da8fd949
 ```
+** Modify variable from default.tfvars.example**
+```bash
+cp default.tfvars.exmaple default.tfvars
+```
 **Apply**
 ```bash
-terraform apply
+terraform apply -var-file default.tfvars
 ```
 
 ### Additional
