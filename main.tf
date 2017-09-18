@@ -3,6 +3,7 @@ module "vpc" {
 
     project                        = "${var.project}"
     aws_region                     = "${var.aws_region}"
+    aws_profile                    = "${var.aws_profile}"
 
     count_bastion_subnet_on_public = "${var.count_bastion_subnet_on_public}"
     count_public_subnet_per_az     = "${var.count_public_subnet_per_az}"
@@ -14,6 +15,7 @@ module "jenkins" {
 
     project                        = "${var.project}"
     aws_region                     = "${var.aws_region}"
+    aws_profile                    = "${var.aws_profile}"
 
     aws_ami_docker                 = "${var.aws_ami_docker}"
     domain                         = "lancekuo.com"
@@ -40,6 +42,8 @@ module "registry" {
 
     project                  = "${var.project}"
     aws_region               = "${var.aws_region}"
+    aws_profile              = "${var.aws_profile}"
+
 
     vpc_default_id           = "${module.vpc.vpc_default_id}"
     security_group_node_id   = "${module.jenkins.security_group_node_id}"
