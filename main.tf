@@ -53,6 +53,8 @@ module "registry" {
 
     route53_internal_zone_id = "${module.vpc.route53_internal_zone_id}"
     s3_bucketname_registry   = "${var.s3_bucketname_registry}"
+    ci_workspace_name        = "${terraform.workspace}"
+    ci_project_name          = "${var.project}"
 }
 
 module "script" {
