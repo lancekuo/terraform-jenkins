@@ -48,7 +48,6 @@ module "registry" {
     aws_region               = "${var.aws_region}"
     aws_profile              = "${var.aws_profile}"
 
-
     vpc_default_id           = "${module.vpc.vpc_default_id}"
     security_group_node_id   = "${module.jenkins.security_group_node_id}"
     bastion_public_ip        = "${module.jenkins.bastion_public_ip}"
@@ -57,6 +56,7 @@ module "registry" {
 
     route53_internal_zone_id = "${module.vpc.route53_internal_zone_id}"
     s3_bucketname_registry   = "${var.s3_bucketname_registry}"
+
     ci_workspace_name        = "${terraform.workspace}"
     ci_project_name          = "${var.project}"
 }
