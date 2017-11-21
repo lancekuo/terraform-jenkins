@@ -35,6 +35,10 @@ module "jenkins" {
     count_bastion_subnet_on_public = "${var.count_bastion_subnet_on_public}"
     count_instance_per_az          = "${var.count_instance_per_az}"
     count_jenkins_node             = "1"
+
+    mount_point                    = "/opt/jenkins"
+    device_file                    = "/dev/xvdg"
+    partition_file                 = "/dev/xvdg1"
 }
 
 module "registry" {
