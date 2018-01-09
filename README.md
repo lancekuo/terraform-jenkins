@@ -129,8 +129,6 @@ ssh-keygen -q -t rsa -b 4096 -f keys/bastion -N ''
 ```
 **Import the persistent stroage**
 
-Terraform 0.11.0 has an issue that `import` command couldn't be attached with different aws profile even you have declared in module. Probably I need to rewrite provider section in every module, but that's just in case. If you have multiple AWS profile, move the one you used in creating the resource under `default` section in your `.aws/credential` file before you run `terraform import`.
-
 ```bash
 terraform import module.jenkins.aws_ebs_volume.storage-jenkins vol-01940bea2da8fd949
 terraform import module.registry.aws_s3_bucket.registry hub.private.registry
@@ -138,7 +136,7 @@ terraform import module.registry.aws_s3_bucket_object.docker docker/
 ```
 **Modify variable from default.tfvars.example**
 ```bash
-cp default.tfvars.exmaple default.tfvars
+cp default.auto.tfvars.example default.auto.tfvars
 ```
 **Apply**
 ```bash
