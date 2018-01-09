@@ -1,4 +1,13 @@
+provider "aws" {
+    alias   = "${var.aws_profile}"
+    region  = "${var.aws_region}"
+    profile = "${var.aws_profile}"
+}
+
 module "vpc" {
+    providers = {
+        "aws" = "aws.${var.aws_profile}"
+    }
     source                         = "github.com/lancekuo/tf-vpc"
 
     project                        = "${var.project}"
@@ -11,6 +20,9 @@ module "vpc" {
 }
 
 module "jenkins" {
+    providers = {
+        "aws" = "aws.${var.aws_profile}"
+    }
     source                         = "github.com/lancekuo/tf-jenkins"
 
     project                        = "${var.project}"
@@ -42,6 +54,9 @@ module "jenkins" {
 }
 
 module "registry" {
+    providers = {
+        "aws" = "aws.${var.aws_profile}"
+    }
     source                   = "github.com/lancekuo/tf-registry"
 
     project                  = "${var.project}"
@@ -63,6 +78,9 @@ module "registry" {
 }
 
 module "script" {
+    providers = {
+        "aws" = "aws.${var.aws_profile}"
+    }
     source                   = "github.com/lancekuo/tf-tools"
 
     project                  = "${var.project}"

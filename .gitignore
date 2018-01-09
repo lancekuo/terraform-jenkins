@@ -3,5 +3,5 @@ terraform.tfstate.d/
 *.swp
 keys/*
 !keys/.placeholder
-*.tfvars*
+*.auto.tfvars
 !default.auto.tfvars.example

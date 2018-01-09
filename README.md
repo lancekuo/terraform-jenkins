@@ -66,7 +66,7 @@ variable "region" {
 This is the primary Terraform module to build the infrastructure for Jenkins. This module would create resources includes,
 
 | Resource        | Purpose                          |
-|-----------------|----------------------------------|
+| --------------- | -------------------------------- |
 | Bastion         | With EIP                         |
 | Node            | With Docker engine ready         |
 | Security Groups | Restrict policy                  |
@@ -86,10 +86,10 @@ Check [here](https://github.com/lancekuo/tf-jenkins/blob/master/ebs.tf) to know 
 This module creates private registry and store images in S3 bucket and the container runs on Bastion machine.
 Default Route53_record for private registry is `{ENV}-registry.{PROJECT}.internal`.
 
-| Resource | Purpose                          |
-|----------|----------------------------------|
-| S3       | Private registry run on Bastion  |
-| Route53  | Point to private registry dns    |
+| Resource | Purpose                         |
+| -------- | ------------------------------- |
+| S3       | Private registry run on Bastion |
+| Route53  | Point to private registry dns   |
 
 #### Important Note
 > Add `/docker` folder under root of the bucket for registry, this is the bug of registry.
@@ -128,20 +128,25 @@ ssh-keygen -q -t rsa -b 4096 -f keys/node -N ''
 ssh-keygen -q -t rsa -b 4096 -f keys/bastion -N ''
 ```
 **Import the persistent stroage**
+
+Terraform 0.11.0 has an issue that `import` command couldn't be attached with different aws profile even you have declared in module. Probably I need to rewrite provider section in every module, but that's just in case. If you have multiple AWS profile, move the one you used in creating the resource under `default` section in your `.aws/credential` file before you run `terraform import`.
+
 ```bash
-terraform import module.registry.aws_s3_bucket.registry registry.hub.internal
 terraform import module.jenkins.aws_ebs_volume.storage-jenkins vol-01940bea2da8fd949
+terraform import module.registry.aws_s3_bucket.registry hub.private.registry
+terraform import module.registry.aws_s3_bucket_object.docker docker/
 ```
-** Modify variable from default.tfvars.example**
+**Modify variable from default.tfvars.example**
 ```bash
 cp default.tfvars.exmaple default.tfvars
 ```
 **Apply**
 ```bash
-terraform apply -var-file default.tfvars
+terraform apply
 ```
 
 ### Additional
+
 **Update your ssh config**
 ```bash
 ruby keys/ssh_config_*.rb
@@ -149,9 +154,10 @@ ruby keys/ssh_config_*.rb
 
 **Teardown the infrastructure**
 ```bash
-terraform state rm module.registry.aws_s3_bucket.registry
 terraform state rm module.jenkins.aws_ebs_volume.storage-jenkins
-terraform destroy -force
+terraform state rm module.registry.aws_s3_bucket.registry
+terraform state rm module.registry.aws_s3_bucket_object.docker
+terraform destroy
 ```
 
 ## Jenkins
