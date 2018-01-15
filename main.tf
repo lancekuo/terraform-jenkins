@@ -51,6 +51,8 @@ module "jenkins" {
     mount_point                    = "/opt/jenkins"
     device_file                    = "/dev/xvdg"
     partition_file                 = "/dev/xvdg1"
+
+    route53_internal_zone_id       = "${module.vpc.route53_internal_zone_id}"
 }
 
 module "registry" {
