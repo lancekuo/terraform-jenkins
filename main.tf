@@ -46,7 +46,7 @@ module "jenkins" {
 
     count_bastion_subnet_on_public = "${var.count_bastion_subnet_on_public}"
     count_instance_per_az          = "${var.count_instance_per_az}"
-    count_jenkins_node             = "1"
+    count_jenkins_node             = "${var.count_jenkins_node}"
 
     mount_point                    = "/opt/jenkins"
     device_file                    = "/dev/xvdg"

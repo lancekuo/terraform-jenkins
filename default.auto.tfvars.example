@@ -9,6 +9,7 @@ count_bastion_subnet_on_public  = 1
 count_public_subnet_per_az      = 1
 count_private_subnet_per_az     = 1
 count_instance_per_az           = 1
+count_jenkins_node              = 1
 
 aws_ami_docker                  = "ami-fe465d85"
 instance_type_bastion           = "t2.nano"
